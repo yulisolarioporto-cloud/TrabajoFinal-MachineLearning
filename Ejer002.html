@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+<title>Trazado de línea</title>
+</head>
+<body>
+<script>
+let handPose
+let video
+let hands = []
+
+function preload(){
+    handPose = ml5.handPose()
+}
+
+function setup(){
+    createCanvas(640,480)
+    video = createCapture(VIDEO)
+    video.size(640,480)
+    video.hide()
+    handPose.detectStart(video,gotHands)
+}
+
+function draw(){
+    image(video,0,0,width,height)
+    if(hands.length > 1){
+        let finger1 = hands[0].index_finger_tip
+        let finger2 = hands[1].index_finger_tip
+
+        stroke(128,0,255)
+        strokeWeight(3)
+        line( finger1.x, finger1.y, finger2.x,finger2.y
+        )
+        //puntos
+        fill(200)
+        circle(finger1.x,finger1.y,10)
+        circle(finger2.x,finger2.y,10)
+    }
+}
+
+function gotHands(result){
+    hands = result
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+
+<title>Detección de partes del rostro</title>
+</head>
+
+<body>
+
+<select id="parteRostro">
+  <option value="leftEye">Ojo Izquierdo</option>
+  <option value="rightEye">Ojo Derecho</option>
+  <option value="leftEyebrow">Ceja Izquierda</option>
+  <option value="rightEyebrow">Ceja Derecha</option>
+  <option value="nose">Nariz</option>
+  <option value="lips">Labios</option>
+  <option value="faceOval">Contorno Rostro</option>
+</select>
+
+<input type="color" id="colorPicker" value="#ffffff">
+
+<script>
+let faceMesh;
+let video;
+let faces = [];
+let options = {
+  maxFaces: 1,
+  refineLandmarks: false,
+  flipHorizontal: false
+};
+
+function preload(){
+  faceMesh = ml5.faceMesh(options);
+}
+
+function setup(){
+  createCanvas(640,480);
+  video = createCapture(VIDEO);
+  video.size(640,480);
+  video.hide();
+  faceMesh.detectStart(video,gotFaces);
+}
+
+function draw(){
+  image(video,0,0,width,height);
+  if(faces.length > 0){
+    let face = faces[0];
+    let parte =
+      document.getElementById("parteRostro").value;
+    let colorSeleccionado =
+      document.getElementById("colorPicker").value;
+    let puntos = face[parte].keypoints;
+    fill(colorSeleccionado);
+    noStroke();
+    for(let i = 0; i < puntos.length; i++){
+      let punto = puntos[i];
+      circle(punto.x,punto.y,5);
+    }
+  }
+}
+function gotFaces(results){
+  faces = results;
+}
+</script>
+</body>
+</html>

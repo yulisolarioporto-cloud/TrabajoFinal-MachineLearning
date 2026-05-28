@@ -1,0 +1,92 @@
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#1e1e2f,#2d1b4e);
+min-height:100vh;
+margin:0;
+padding:30px;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+}
+
+#panel{
+width:95%;
+max-width:1400px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
+border:2px solid rgba(255,255,255,0.15);
+border-radius:30px;
+padding:40px;
+box-shadow:0 15px 40px rgba(0,0,0,0.5);
+}
+
+h1{
+font-size:50px;
+margin-bottom:40px;
+text-align:center;
+text-shadow:3px 3px 10px black;
+}
+
+#contenedor{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:25px;
+}
+
+.card{
+width:260px;
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(10px);
+border:2px solid rgba(255,255,255,0.15);
+border-radius:25px;
+padding:25px;
+transition:0.3s;
+box-shadow:0 8px 20px rgba(0,0,0,0.4);
+text-align:center;
+}
+
+.card:hover{
+transform:translateY(-10px) scale(1.04);
+box-shadow:0 15px 30px rgba(0,0,0,0.6);
+border-color:#b388ff;
+}
+
+.icono{
+font-size:70px;
+margin-bottom:15px;
+color:#d5b3ff;
+text-shadow:0 0 15px rgba(179,136,255,0.8);
+}
+
+.card h2{
+margin:10px 0;
+font-size:28px;
+color:white;
+}
+
+.card p{
+font-size:17px;
+color:#e0e0e0;
+min-height:50px;
+}
+
+button{
+width:100%;
+padding:13px;
+border:none;
+border-radius:15px;
+background:linear-gradient(45deg,#7b2ff7,#f107a3);
+color:white;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+box-shadow:0 5px 15px rgba(0,0,0,0.4);
+}
+
+button:hover{
+transform:scale(1.05);
+opacity:0.9;
+}

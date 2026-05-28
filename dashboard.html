@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seleccione el ejercicio a desarrollar</title>
+
+  <link rel="stylesheet" href="style/dashboard.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+</head>
+
+<body>
+
+  <div id="panel">
+
+    <h1>Ejercicios a desarrollar</h1>
+
+    <div id="contenedor">
+
+      <div class="card">
+
+        <i class="ti ti-photo-search icono"></i>
+
+        <h2>Ejercicio 01</h2>
+
+        <p>Reconocimiento de imágenes</p>
+
+        <button onclick="abrirEjercicio('Ejer001.html')">
+          Empezar
+        </button>
+
+      </div>
+
+      <div class="card">
+
+        <i class="ti ti-hand-finger icono"></i>
+
+        <h2>Ejercicio 02</h2>
+
+        <p>Trazado de línea entre dedos</p>
+
+        <button onclick="abrirEjercicio('Ejer002.html')">
+          Empezar
+        </button>
+
+      </div>
+
+      <div class="card">
+
+        <i class="ti ti-face-id icono"></i>
+
+        <h2>Ejercicio 03</h2>
+
+        <p>Detección de partes del rostro</p>
+
+        <button onclick="abrirEjercicio('Ejer003.html')">
+          Empezar
+        </button>
+
+      </div>
+
+      <div class="card">
+
+        <i class="ti ti-brain icono"></i>
+
+        <h2>Ejercicio 04</h2>
+
+        <p>Teachable Machine</p>
+
+        <button onclick="abrirEjercicio('Ejer004.html')">
+          Empezar
+        </button>
+
+      </div>
+
+      <div class="card">
+
+        <i class="ti ti-user-search icono"></i>
+
+        <h2>Ejercicio 05</h2>
+
+        <p>Detección de personas</p>
+
+        <button onclick="abrirEjercicio('Ejer005.html')">
+          Empezar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    function abrirEjercicio(archivo){
+
+      window.location.href = archivo;
+
+    }
+
+  </script>
+
+</body>
+</html>

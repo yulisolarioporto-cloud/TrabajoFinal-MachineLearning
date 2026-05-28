@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capacidad de detectar una imagen</title>
+  <link rel="stylesheet" href="style/Ejer001.css">
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+</head>
+<body>
+  <h2>Reconocimiento de imágenes</h2>
+  <div id="galeria">
+    <img src="image/hipo.jpg" class="miniatura" onclick="cambiarImagen('image/hipo.jpg')">
+    <img src="image/huron.jpg" class="miniatura" onclick="cambiarImagen('image/huron.jpg')">
+    <img src="image/lobo.jpg" class="miniatura" onclick="cambiarImagen('image/lobo.jpg')">
+    <img src="image/manati.jpg" class="miniatura" onclick="cambiarImagen('image/manati.jpg')">
+    <img src="image/tigre.jpg" class="miniatura" onclick="cambiarImagen('image/tigre.jpg')">
+    <img src="image/pikachu.jpg" class="miniatura" onclick="cambiarImagen('image/pikachu.jpg')">
+  </div>
+
+
+  <div id="barraFondo">
+    <div id="barra"></div>
+  </div>
+
+  <script>
+    let classifier;
+    let img;
+    let label = "";
+    let confidence = "";
+    let porcentaje = 0;
+    let mostrarPregunta = false;
+
+    function preload() {
+      classifier = ml5.imageClassifier("MobileNet");
+    }
+
+    function setup() {
+      createCanvas(400, 400);
+      background(220);
+
+    }
+
+    function draw() {
+      background(220);
+      if (img) {
+        image(img, 0, 0, width, height);
+        fill(255);
+        stroke(0);
+        strokeWeight(3);
+        if (mostrarPregunta) {
+          textSize(200);
+          text("?", 170, 220);
+        }
+        else {
+          textSize(18);
+          text(label, 20, 40);
+          text(confidence, 20, 70);
+        }
+      }
+    }
+
+    function cambiarImagen(rutaImagen) {
+      label = "Clasificando...";
+      confidence = "";
+      porcentaje = 0;
+      mostrarPregunta = false;
+      img = loadImage(rutaImagen, () => {
+        classifier.classify(img)
+          .then(gotResult)
+          .catch(err => console.log(err));
+
+      });
+    }
+
+    function gotResult(result) {
+      console.log(result);
+      if (result.length > 0) {
+        porcentaje = result[0].confidence * 100;
+        label = "Descripción: " + result[0].label;
+        confidence = "Confianza: " + porcentaje.toFixed(2) + "%";
+        if (porcentaje < 50) {
+          mostrarPregunta = true;
+        }
+        else {
+          mostrarPregunta = false;
+        }
+        document.getElementById("barra").style.width =
+          porcentaje + "%";
+      }
+    }
+  </script>
+</body>
+</html>
