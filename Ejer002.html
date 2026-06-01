@@ -6,47 +6,79 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+
+<link rel="stylesheet" href="./style/Ejer002.css">
 <title>Trazado de línea</title>
 </head>
+
 <body>
+
+<div class="contenedor">
+    <h1>Detección de Manos</h1>
+    <p>Une dos dedos índices para dibujar una línea en tiempo real.</p>
+</div>   
+
 <script>
-let handPose
-let video
-let hands = []
+
+let handPose;
+let video;
+let hands = [];
+let canvas;
 
 function preload(){
-    handPose = ml5.handPose()
+    handPose = ml5.handPose();
 }
 
 function setup(){
-    createCanvas(640,480)
-    video = createCapture(VIDEO)
-    video.size(640,480)
-    video.hide()
-    handPose.detectStart(video,gotHands)
+    canvas = createCanvas(640,480);
+    canvas.parent(document.querySelector(".contenedor"));
+
+    video = createCapture(VIDEO);
+    video.size(640,480);
+    video.hide();
+
+    handPose.detectStart(video, gotHands);
 }
 
 function draw(){
-    image(video,0,0,width,height)
-    if(hands.length > 1){
-        let finger1 = hands[0].index_finger_tip
-        let finger2 = hands[1].index_finger_tip
 
-        stroke(128,0,255)
-        strokeWeight(3)
-        line( finger1.x, finger1.y, finger2.x,finger2.y
-        )
-        //puntos
-        fill(200)
-        circle(finger1.x,finger1.y,10)
-        circle(finger2.x,finger2.y,10)
+    image(video,0,0,width,height);
+
+    if(hands.length > 1){
+
+        let finger1 = hands[0].index_finger_tip;
+        let finger2 = hands[1].index_finger_tip;
+
+        let distancia = dist(
+            finger1.x, finger1.y,
+            finger2.x, finger2.y
+        );
+
+        let grosor = map(distancia, 0, 500, 25, 2);
+        grosor = constrain(grosor, 2, 25);
+
+        stroke(128, 0, 255);
+        strokeWeight(grosor);
+
+        line(
+            finger1.x,
+            finger1.y,
+            finger2.x,
+            finger2.y
+        );
+
+        // puntos
+        fill(200);
+        circle(finger1.x, finger1.y, 10);
+        circle(finger2.x, finger2.y, 10);
     }
 }
 
 function gotHands(result){
-    hands = result
+    hands = result;
 }
 
 </script>
+
 </body>
 </html>

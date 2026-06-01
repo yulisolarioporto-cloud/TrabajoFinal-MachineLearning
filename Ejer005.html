@@ -1,4 +1,120 @@
-<!--Utilizando el detector de objetos de la librería ML5, 
-emitir una alerta cuando detecte la presencia de una persona por más de 5 segundos. 
-Se deberá mostrar una barra de desplazamiento durante el conteo, 
-si llega a 5, la alarma se emite (sonora).-->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Alerta de Persona</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+    <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+  </head>
+
+  <body>
+    <h2>Alerta de persona</h2>
+
+    <p id="estado">Esperando...</p>
+
+    <input
+      type="range"
+      id="barra"
+      min="0"
+      max="5"
+      step="0.1"
+      value="0"
+      disabled
+    />
+
+    <audio id="alarma" src="./audio/alarma.mp3" loop></audio>
+
+    <script>
+      let detector;
+      let video;
+      let detecciones = [];
+
+      let personaDetectada = false;
+      let tiempoInicio = 0;
+      let alarmaActivada = false;
+
+      function setup() {
+        createCanvas(640, 480);
+
+        video = createCapture(VIDEO);
+        video.size(640, 480);
+        video.hide();
+
+        detector = ml5.objectDetector("cocossd", modelReady);
+      }
+
+      function modelReady() {
+        console.log("Modelo listo");
+        detect();
+      }
+
+      function detect() {
+        detector.detect(video, gotResults);
+      }
+
+      function gotResults(err, results) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        detecciones = results || [];
+        detect();
+      }
+
+      function draw() {
+        image(video, 0, 0, width, height);
+
+        let hayPersona = false;
+
+        for (let obj of detecciones) {
+          if (obj.label === "person") {
+            hayPersona = true;
+
+            stroke(255, 0, 0);
+            strokeWeight(3);
+          } else {
+            stroke(100);
+            strokeWeight(1);
+          }
+
+          noFill();
+          rect(obj.x, obj.y, obj.width, obj.height);
+        }
+
+        if (hayPersona) {
+          if (!personaDetectada) {
+            personaDetectada = true;
+            tiempoInicio = millis();
+          }
+
+          let seg = min((millis() - tiempoInicio) / 1000, 5);
+
+          document.getElementById("barra").value = seg;
+          document.getElementById("estado").innerText =
+            "Persona: " + seg.toFixed(1) + "s";
+
+          if (seg >= 5 && !alarmaActivada) {
+            alarmaActivada = true;
+
+            let audio = document.getElementById("alarma");
+            audio.play();
+
+            document.getElementById("estado").innerText = "ALARMA";
+          }
+        } else {
+          personaDetectada = false;
+          alarmaActivada = false;
+
+          document.getElementById("barra").value = 0;
+          document.getElementById("estado").innerText = "Esperando...";
+
+          let audio = document.getElementById("alarma");
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      }
+    </script>
+  </body>
+</html>

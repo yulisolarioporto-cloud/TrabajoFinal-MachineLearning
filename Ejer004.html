@@ -1,5 +1,108 @@
-<!-- Utiliza TEACHABLE MACHINE, entrenar un nuevo modelo para que sea capaz de detectar:
-  Una botella, una billetera, un control remoto y un plumón. 
-  Se deberá poder realizar la detección en tiempo real, solo se mostrará el nombre y porcentaje del elemento detectado. 
-  Además, utilice un sintetizador de voz para que se pueda escuchar lo que se encontró. 
- Condicionar un nivel de confianza sobre el 50%-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detector de Objetos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+    <script src="https://unpkg.com/ml5@1.3.1/dist/ml5.min.js"></script>
+    
+
+</head>
+<body>
+
+    <h1>Detector de Objetos</h1>
+    <div id="canvas-container"></div>
+
+    <div class="campos">
+        <div class="campo">
+            <label>Objeto</label>
+            <input type="text" id="descripcion" readonly>
+        </div>
+        <div class="campo">
+            <label>Confianza</label>
+            <input type="text" id="confianza" readonly>
+        </div>
+    </div>
+
+    <div class="barra-wrap"><div id="barra"></div></div>
+
+    <div class="estado">
+        <div id="dot"></div>
+        <span id="estado-msg">Iniciando modelo…</span>
+    </div>
+
+    <script>
+        let classifier;
+        let video;
+        let ultimaEtiqueta = "";
+        const dot = document.getElementById("dot");
+        const estadoMsg = document.getElementById("estado-msg");
+        const barra = document.getElementById("barra");
+
+        function setEstado(msg, clase) {
+            estadoMsg.textContent = msg;
+            dot.className = clase || "";
+        }
+
+        function preload() {
+            classifier = ml5.imageClassifier("./models/model.json");
+        }
+
+        function setup() {
+            let cnv = createCanvas(320, 260);
+            cnv.parent("canvas-container");
+            video = createCapture(VIDEO, {flipped: true});
+            video.size(320, 260);
+            video.hide();
+            setEstado("Cámara activa", "listo");
+            classifyVideo();
+        }
+
+        function draw() {
+            image(video, 0, 0, 320, 260);
+        }
+
+        async function classifyVideo() {
+            
+            classifier.classify(video, gotResult);
+        }
+
+        function gotResult(results) {
+            let res = results[0];
+            let pct = (res.confidence * 100).toFixed(1);
+            
+            document.getElementById("descripcion").value = traducir(res.label);
+            document.getElementById("confianza").value = pct + "%";
+            barra.style.width = pct + "%";
+
+            if (pct >= 50 && res.label !== ultimaEtiqueta) {
+                hablar(traducir(res.label));
+                ultimaEtiqueta = res.label;
+            }
+
+            classifyVideo();
+        }
+
+        
+        function traducir(nombre) {
+            let n = nombre.toLowerCase();
+            if (n.includes("botella")) return "botella";
+            if (n.includes("billetera")) return "billetera";
+            if (n.includes("Controles")) return "Controles";
+            if (n.includes("Plumon")) return "Plumon";
+            return nombre;
+        }
+
+        function hablar(texto) {
+            if (!window.speechSynthesis) return;
+            speechSynthesis.cancel();
+            let msg = new SpeechSynthesisUtterance(texto);
+            msg.lang = "es-ES";
+            msg.onstart = () => setEstado("Anunciando...", "hablando");
+            msg.onend = () => setEstado("Detectando…", "listo");
+            speechSynthesis.speak(msg);
+        }
+    </script>
+</body>
+</html>

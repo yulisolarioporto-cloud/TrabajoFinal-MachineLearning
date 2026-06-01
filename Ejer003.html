@@ -6,6 +6,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+<link rel="stylesheet" href="./style/Ejer003.css">
 
 <title>Detección de partes del rostro</title>
 </head>
@@ -25,9 +26,11 @@
 <input type="color" id="colorPicker" value="#ffffff">
 
 <script>
+
 let faceMesh;
 let video;
 let faces = [];
+
 let options = {
   maxFaces: 1,
   refineLandmarks: false,
@@ -43,7 +46,7 @@ function setup(){
   video = createCapture(VIDEO);
   video.size(640,480);
   video.hide();
-  faceMesh.detectStart(video,gotFaces);
+  faceMesh.detectStart(video, gotFaces);
 }
 
 function draw(){
@@ -54,18 +57,48 @@ function draw(){
       document.getElementById("parteRostro").value;
     let colorSeleccionado =
       document.getElementById("colorPicker").value;
-    let puntos = face[parte].keypoints;
-    fill(colorSeleccionado);
-    noStroke();
-    for(let i = 0; i < puntos.length; i++){
-      let punto = puntos[i];
-      circle(punto.x,punto.y,5);
+
+  if(parte == "nose"){
+  fill(colorSeleccionado);
+  noStroke();
+
+  let puntosNariz = [
+    face.keypoints[1],
+    face.keypoints[4],
+    face.keypoints[5],
+    face.keypoints[45],
+    face.keypoints[275]
+  ];
+
+  for(let i = 0; i < puntosNariz.length; i++){
+    circle(
+      puntosNariz[i].x,
+      puntosNariz[i].y,
+      5
+    );
+
+  }
+
+}else{
+      let puntos = face[parte].keypoints;
+      fill(colorSeleccionado);
+      noStroke();
+      for(let i = 0; i < puntos.length; i++){
+        let punto = puntos[i];
+        circle(
+          punto.x,
+          punto.y,
+          5
+        );
+      }
     }
   }
 }
+
 function gotFaces(results){
   faces = results;
 }
+
 </script>
 </body>
 </html>
