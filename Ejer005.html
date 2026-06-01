@@ -1,120 +1,252 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Alerta de Persona</title>
+<head>
+<meta charset="UTF-8">
+<title>Alerta de Persona</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
-    <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
-  </head>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+<script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+<link rel="stylesheet" href="./style/Ejer005.css">
+</head>
 
-  <body>
-    <h2>Alerta de persona</h2>
+<body>
 
-    <p id="estado">Esperando...</p>
+<h2>Alerta de Persona</h2>
 
-    <input
-      type="range"
-      id="barra"
-      min="0"
-      max="5"
-      step="0.1"
-      value="0"
-      disabled
-    />
+<p id="estado">Esperando...</p>
 
-    <audio id="alarma" src="./audio/alarma.mp3" loop></audio>
+<progress
+id="barra"
+value="0"
+max="5">
+</progress>>
 
-    <script>
-      let detector;
-      let video;
-      let detecciones = [];
+<audio
+id="alarma"
+src="./audio/alarma.mp3"
+loop>
+</audio>
 
-      let personaDetectada = false;
-      let tiempoInicio = 0;
-      let alarmaActivada = false;
+<script>
 
-      function setup() {
-        createCanvas(640, 480);
+let detector;
+let video;
+let detecciones=[];
 
-        video = createCapture(VIDEO);
-        video.size(640, 480);
-        video.hide();
+let personaDetectada=false;
+let tiempoInicio=0;
+let alarmaActivada=false;
 
-        detector = ml5.objectDetector("cocossd", modelReady);
-      }
+function setup(){
 
-      function modelReady() {
-        console.log("Modelo listo");
-        detect();
-      }
+    createCanvas(640,480);
 
-      function detect() {
-        detector.detect(video, gotResults);
-      }
+    video=createCapture(VIDEO);
 
-      function gotResults(err, results) {
-        if (err) {
-          console.error(err);
-          return;
-        }
+    video.size(640,480);
 
-        detecciones = results || [];
-        detect();
-      }
+    video.hide();
 
-      function draw() {
-        image(video, 0, 0, width, height);
+    video.elt.onloadeddata=function(){
 
-        let hayPersona = false;
+        console.log(
+            "Camara lista"
+        );
 
-        for (let obj of detecciones) {
-          if (obj.label === "person") {
-            hayPersona = true;
+        detector=
+            ml5.objectDetector(
+                "cocossd",
+                modelReady
+            );
+    };
+}
 
-            stroke(255, 0, 0);
+function modelReady(){
+
+    console.log(
+        "Modelo listo"
+    );
+
+    detect();
+}
+
+function detect(){
+
+    detector.detect(
+        video,
+        gotResults
+    );
+}
+
+function gotResults(
+    err,
+    results
+){
+
+    if(err){
+
+        console.error(err);
+        return;
+    }
+
+    detecciones=
+        results || [];
+
+    detect();
+}
+
+function draw(){
+
+    image(
+        video,
+        0,
+        0,
+        width,
+        height
+    );
+
+    let hayPersona=false;
+
+    for(let obj of detecciones){
+
+        if(
+            obj.label==="person"
+        ){
+
+            hayPersona=true;
+
+            stroke(
+                255,
+                0,
+                0
+            );
+
             strokeWeight(3);
-          } else {
-            stroke(100);
-            strokeWeight(1);
-          }
 
-          noFill();
-          rect(obj.x, obj.y, obj.width, obj.height);
+        }else{
+
+            stroke(100);
+
+            strokeWeight(1);
         }
 
-        if (hayPersona) {
-          if (!personaDetectada) {
-            personaDetectada = true;
-            tiempoInicio = millis();
-          }
+        noFill();
 
-          let seg = min((millis() - tiempoInicio) / 1000, 5);
+        rect(
+            obj.x,
+            obj.y,
+            obj.width,
+            obj.height
+        );
 
-          document.getElementById("barra").value = seg;
-          document.getElementById("estado").innerText =
-            "Persona: " + seg.toFixed(1) + "s";
+        fill(
+            255,
+            0,
+            0
+        );
 
-          if (seg >= 5 && !alarmaActivada) {
-            alarmaActivada = true;
+        textSize(18);
 
-            let audio = document.getElementById("alarma");
+        text(
+            obj.label,
+            obj.x,
+            obj.y-5
+        );
+    }
+
+    if(hayPersona){
+
+        if(
+            !personaDetectada
+        ){
+
+            personaDetectada=
+                true;
+
+            tiempoInicio=
+                millis();
+        }
+
+        let seg=min(
+            (
+                millis()
+                -
+                tiempoInicio
+            )/1000,
+            5
+        );
+
+        document
+        .getElementById(
+            "barra"
+        ).value=seg;
+
+        document
+        .getElementById(
+            "estado"
+        ).innerText=
+            "Persona: "
+            +
+            seg.toFixed(1)
+            +
+            "s";
+
+        if(
+            seg>=2
+            &&
+            !alarmaActivada
+        ){
+
+            alarmaActivada=
+                true;
+
+            let audio=
+                document
+                .getElementById(
+                    "alarma"
+                );
+
             audio.play();
 
-            document.getElementById("estado").innerText = "ALARMA";
-          }
-        } else {
-          personaDetectada = false;
-          alarmaActivada = false;
-
-          document.getElementById("barra").value = 0;
-          document.getElementById("estado").innerText = "Esperando...";
-
-          let audio = document.getElementById("alarma");
-          audio.pause();
-          audio.currentTime = 0;
+            document
+            .getElementById(
+                "estado"
+            ).innerText=
+                "ALARMA";
         }
-      }
-    </script>
-  </body>
+
+    }else{
+
+        personaDetectada=
+            false;
+
+        alarmaActivada=
+            false;
+
+        document
+        .getElementById(
+            "barra"
+        ).value=0;
+
+        document
+        .getElementById(
+            "estado"
+        ).innerText=
+            "Esperando...";
+
+        let audio=
+            document
+            .getElementById(
+                "alarma"
+            );
+
+        audio.pause();
+
+        audio.currentTime=0;
+    }
+}
+
+</script>
+
+</body>
 </html>
